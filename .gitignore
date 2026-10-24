@@ -21,7 +21,12 @@ local.properties
 *.keystore
 *.pem
 *.key
- signing.properties
+signing.properties
+# release 签名配置(含密码),绝不入库
+keystore.properties
+# keystore 备份文件
+*.jks.old
+*.keystore.old
 
 # ===== third_party 预编译产物(体积大,按需重新编译,不入库) =====
 # 注意: third_party/README.md 与各库的编译脚本要入库,只忽略产物与第三方源码

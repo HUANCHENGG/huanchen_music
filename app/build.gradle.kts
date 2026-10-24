@@ -1,11 +1,23 @@
 // app 模块构建脚本
 // 版本统一来自 gradle/libs.versions.toml(见 CLAUDE.md 第七节)
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
 }
+
+// —— Release 签名配置:从 keystore.properties 读取(该文件不入库,见 .gitignore) ——
+// 若文件不存在(如 CI 或换机器),release 构建会跳过签名,仅 debug 可正常构建
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        keystorePropertiesFile.inputStream().use { load(it) }
+    }
+}
+val hasReleaseSigning = keystorePropertiesFile.exists()
 
 android {
     namespace = "com.huanchen.music"
@@ -51,6 +63,18 @@ android {
         }
     }
 
+    // —— 签名配置:release 用专属 keystore(密码来自 keystore.properties,不入库) ——
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -59,6 +83,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // 有 keystore 才用 release 签名,否则回退 debug 签名(保证无 keystore 也能编 release)
+            signingConfig = if (hasReleaseSigning) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
         debug {
             // 调试包默认不混淆,便于排查
