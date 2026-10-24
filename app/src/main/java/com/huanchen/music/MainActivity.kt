@@ -4,29 +4,20 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import com.huanchen.music.bridge.NativeBridge
+import com.huanchen.music.player.PlaybackController
+import com.huanchen.music.ui.player.BootstrapPlayerScreen
 import com.huanchen.music.ui.theme.HuanchenTheme
 
 /**
- * 主 Activity —— 单 Activity 架构,内部用 Navigation Compose 切页面。
+ * 主 Activity —— 单 Activity 架构。
  *
- * 当前为最小骨架:验证「Kotlin → JNI → native」整条链路通
- * (调 NativeBridge.nativeInit() 并把 native 返回的字符串显示出来)。
- * 后续主页会换成资料库/播放页(见 docs/plan.md)。
+ * 骨架版:承载「最小可发声」验证页(文件选择 → FFmpeg 解码 → AAudio 放声)。
+ * 后续会换成 Navigation Compose 承载资料库/播放页等正式页面(见 docs/plan.md)。
  */
 class MainActivity : ComponentActivity() {
+
+    // 播放控制器:控制层单例,UI 通过它驱动 native(见 CLAUDE.md 第四节)
+    private val playbackController = PlaybackController()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,58 +25,17 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             HuanchenTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    BootstrapScreen()
-                }
+                BootstrapPlayerScreen(
+                    controller = playbackController,
+                    contentResolver = contentResolver
+                )
             }
         }
     }
-}
 
-/**
- * 启动验证页(最小骨架用,验证构建链路与 JNI 链路)。
- * 后续会被正式的资料库主页替换。
- */
-@Composable
-fun BootstrapScreen() {
-    // 调 native 引擎,验证 JNI 链路;失败会抛 UnsatisfiedLinkError 或返回异常串
-    val engineStatus = runCatching { NativeBridge.nativeInit() }
-        .getOrElse { "native 加载失败: ${it.message}" }
-    // 验证 FFmpeg 链接(FFmpeg 接入的核心验收点)
-    val ffmpegStatus = runCatching { NativeBridge.nativeGetFFmpegVersion() }
-        .getOrElse { "FFmpeg 链接失败: ${it.message}" }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "幻辰音乐",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = "构建链路验证",
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(top = 8.dp)
-        )
-        Text(
-            text = "native 引擎: $engineStatus",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 24.dp)
-        )
-        Text(
-            text = ffmpegStatus,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 8.dp)
-        )
+    override fun onDestroy() {
+        super.onDestroy()
+        // 退出时停止播放,释放 native 资源
+        playbackController.stop()
     }
 }

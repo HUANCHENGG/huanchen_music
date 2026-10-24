@@ -46,15 +46,19 @@ set_target_properties(avformat PROPERTIES
 
 # ============================================================
 # 引擎层共享库
-# 后续源文件会按 decoder/dsp/output/usb 子目录扩充(见 CLAUDE.md 第三节)
+# 源文件按 decoder/output 子目录组织(见 CLAUDE.md 第三节)
 # ============================================================
 add_library(huanchen_engine SHARED
     jni_bridge.cpp
+    decoder/ffmpeg_decoder.cpp
+    output/aaudio_output.cpp
+    playback_engine.cpp
 )
 
 # 链接安卓系统库
 find_library(log-lib log)
 find_library(android-lib android)
+find_library(aaudio-lib aaudio)     # AAudio 系统通路输出
 
 # 链接顺序:先本库依赖的 FFmpeg,再系统库
 target_link_libraries(huanchen_engine
@@ -62,6 +66,7 @@ target_link_libraries(huanchen_engine
     avcodec
     swresample
     avutil
+    ${aaudio-lib}
     ${log-lib}
     ${android-lib}
 )
