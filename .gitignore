@@ -1,0 +1,44 @@
+# ===== 本地环境(不入库) =====
+local.properties
+
+# ===== 构建产物 =====
+build/
+*/build/
+.gradle/
+.cxx/                       # NDK/CMake 中间产物(任意层级)
+**/.cxx/
+.externalNativeBuild/
+**/.externalNativeBuild/
+
+# ===== Android Studio / IDE =====
+*.iml
+.idea/
+*.hprof
+local.properties
+
+# ===== 签名/密钥(红线:不进库) =====
+*.jks
+*.keystore
+*.pem
+*.key
+ signing.properties
+
+# ===== third_party 预编译产物(体积大,按需重新编译,不入库) =====
+# 注意: third_party/README.md 要入库,只忽略编译出的二进制
+third_party/**/build/
+third_party/**/*.so
+third_party/**/*.a
+
+# ===== 系统垃圾 =====
+.DS_Store
+Thumbs.db
+
+# ===== Kotlin/Java =====
+*.class
+*.jar
+*.war
+# 例外: gradle wrapper jar 必须入库(否则 ./gradlew 无法自举)
+!gradle/wrapper/gradle-wrapper.jar
+
+# ===== 日志 =====
+*.log

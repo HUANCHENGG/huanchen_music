@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 启动主题:继承 Material3,作为 Compose 的宿主主题。
+         Compose 内容真正生效前,窗口先画这个主题,避免启动白屏/黑屏突兀。 -->
+    <style name="Theme.HuanchenMusic" parent="android:Theme.Material.NoActionBar">
+        <!-- 状态栏/导航栏透明,配合 enableEdgeToEdge 实现沉浸式 -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+</resources>

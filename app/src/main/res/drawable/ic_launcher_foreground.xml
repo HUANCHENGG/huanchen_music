@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- 启动图标前景:居中音符。viewport 108x108 是自适应图标规范,内容放在中央 72x72 安全区 -->
+    <group
+        android:scaleX="0.9"
+        android:scaleY="0.9"
+        android:translateX="32.4"
+        android:translateY="32.4">
+        <!-- 八分音符(简化矢量):HiFi 播放器的标识 -->
+        <path
+            android:fillColor="#E94560"
+            android:pathData="M32,8 L32,30.2 C30.6,29.5 28.9,29 27,29 C22.6,29 19,32.6 19,37 C19,41.4 22.6,45 27,45 C31.4,45 35,41.4 35,37 L35,16 L43,16 L43,8 Z" />
+    </group>
+</vector>

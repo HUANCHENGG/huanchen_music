@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 应用清单 —— 权限与组件声明
+     USB 独占相关声明见下(CLAUDE.md 第六节「路线A」):
+       - uses-feature android.hardware.usb.host(required=false:支持无 USB host 的机器也能装)
+       - 运行时 UsbManager.requestPermission() 授权,不在 manifest 声明 USB 权限
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- USB host:连小尾巴/DAC 的硬件前提。required=false 保证无此能力的设备也能安装(只是不能用独占) -->
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="false" />
+
+    <!-- 读取本地音频文件:
+         Android 13+(API33+)用细粒度 READ_MEDIA_AUDIO;
+         及以下用 READ_EXTERNAL_STORAGE(maxSdkVersion 限制避免重复) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <!-- 前台服务:音乐播放需要前台服务保活(type=mediaPlayback 是 Android 14+ 要求) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <!-- 通知:播放控制通知(媒体会话卡片) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:name=".HuanchenApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.HuanchenMusic"
+        tools:targetApi="35">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- USB 设备插入时唤起(可选,提升独占体验;device_filter 后续建) -->
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+            <!-- device_filter.xml 列出可唤起的小尾巴 vid/pid,后续接入 USB 模块时补 -->
+            <!-- <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" /> -->
+        </activity>
+
+        <!-- 播放前台服务:后续 player 模块实现,先占位声明 -->
+        <!-- <service
+            android:name=".player.PlayerService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="false" /> -->
+    </application>
+
+</manifest>
