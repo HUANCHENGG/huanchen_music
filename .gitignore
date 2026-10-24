@@ -47,6 +47,9 @@ third_party/ffmpeg/prebuilt/
 .DS_Store
 Thumbs.db
 
+# ===== 发布临时产物(重命名的 APK 等,不入库) =====
+release_dist/
+
 # ===== Kotlin/Java =====
 *.class
 *.jar
