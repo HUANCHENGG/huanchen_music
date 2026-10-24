@@ -21,4 +21,10 @@ object NativeBridge {
      * 对应 cpp/jni_bridge.cpp 的 Java_com_huanchen_music_bridge_NativeBridge_nativeInit。
      */
     external fun nativeInit(): String
+
+    /**
+     * 获取 FFmpeg 版本信息,验证 FFmpeg 是否正确链接进引擎层。
+     * 对应 cpp/jni_bridge.cpp 的 nativeGetFFmpegVersion。
+     */
+    external fun nativeGetFFmpegVersion(): String
 }

@@ -42,6 +42,15 @@ android {
         }
     }
 
+    // 打包 FFmpeg 预编译 .so 进 APK
+    // 结构必须为 <srcDir>/<abi>/*.so:此处指向 prebuilt/jniLibs,其下 arm64-v8a/ 即 ABI 目录
+    // (arm64-v8a/*.so 是指向 ffmpeg 实际产物的符号链接,见 third_party/ffmpeg/build_android.sh)
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDir("../third_party/ffmpeg/prebuilt/jniLibs")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true

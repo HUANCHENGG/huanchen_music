@@ -24,10 +24,19 @@ local.properties
  signing.properties
 
 # ===== third_party 预编译产物(体积大,按需重新编译,不入库) =====
-# 注意: third_party/README.md 要入库,只忽略编译出的二进制
+# 注意: third_party/README.md 与各库的编译脚本要入库,只忽略产物与第三方源码
 third_party/**/build/
 third_party/**/*.so
 third_party/**/*.a
+
+# —— 第三方库的源码树与压缩包:不入库(体积大,靠编译脚本下载/生成) ——
+# FFmpeg 源码树(由 build_android.sh 下载解压)与原始压缩包
+third_party/ffmpeg/ffmpeg-*/
+third_party/ffmpeg/*.tar.xz
+third_party/ffmpeg/*.tar.gz
+# FFmpeg 预编译产物(.so 实体 + 符号链接)与中间 build
+third_party/ffmpeg/prebuilt/
+# 其他库后续接入时同样排除其源码树(在此追加)
 
 # ===== 系统垃圾 =====
 .DS_Store

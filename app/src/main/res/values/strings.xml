@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">幻辰 HiFi</string>
+    <!-- 应用显示名:用户看到的名字(可改)。包名 applicationId=com.huanchen.music 是 APP 唯一身份证,发布后不改。 -->
+    <string name="app_name">幻辰音乐</string>
 </resources>

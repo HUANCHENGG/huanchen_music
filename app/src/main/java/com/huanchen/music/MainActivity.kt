@@ -54,6 +54,9 @@ fun BootstrapScreen() {
     // 调 native 引擎,验证 JNI 链路;失败会抛 UnsatisfiedLinkError 或返回异常串
     val engineStatus = runCatching { NativeBridge.nativeInit() }
         .getOrElse { "native 加载失败: ${it.message}" }
+    // 验证 FFmpeg 链接(FFmpeg 接入的核心验收点)
+    val ffmpegStatus = runCatching { NativeBridge.nativeGetFFmpegVersion() }
+        .getOrElse { "FFmpeg 链接失败: ${it.message}" }
 
     Column(
         modifier = Modifier
@@ -63,7 +66,7 @@ fun BootstrapScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "幻辰 HiFi",
+            text = "幻辰音乐",
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold
         )
@@ -77,6 +80,12 @@ fun BootstrapScreen() {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 24.dp)
+        )
+        Text(
+            text = ffmpegStatus,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 8.dp)
         )
     }
 }
